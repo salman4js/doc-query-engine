@@ -82,6 +82,32 @@ pip install -r requirements.txt
 
 Follow instructions from: [https://ollama.com/](https://ollama.com/)
 
+Feel free to pull any available model from ollama as per your system configurations.
+
 ```bash
 ollama pull llama3
 ```
+
+### How to run project?
+
+After the installation steps are done, paste the required documents in the root directory of the project.
+
+```bash
+python3 main.py --store --file {your_file_name}
+```
+This command executes the document processing steps outlined in the Architecture section above.
+
+```bash
+python3 main.py --read
+```
+This command displays the extracted document chunks along with their corresponding embeddings for better visibility.
+
+```bash
+python3 main.py --answer --question "{your_question_here}"
+```
+This command takes a user’s query, converts it into embeddings, and performs a similarity search over stored chunks in ChromaDB. The most relevant chunks are then retrieved and combined with the original query. This combined context is passed to a local LLM, which generates a streaming response.
+
+```bash
+python3 main.py --delete
+```
+This command removes all stored chunk data from the system.
