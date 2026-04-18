@@ -61,6 +61,8 @@ def generate_response(question: str, matches: list[dict]) -> str:
                     print(f"\nFailed to parse line: {line}")
 
         print()  # newline after streaming
+
+        # Return the full_response to perform hallucination check!
         return full_response
 
     except requests.exceptions.RequestException as e:

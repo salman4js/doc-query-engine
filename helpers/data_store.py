@@ -39,7 +39,7 @@ def store_in_chromadb(
     # Embed all chunks in one batch
     model = SentenceTransformer(model_name)
     texts   = [chunk.get("text") for chunk in chunks]
-    vectors = model.encode(texts, batch_size=batch_size, show_progress_bar=True)
+    vectors = model.encode(texts, batch_size=batch_size, show_progress_bar=False)
 
     # Build parallel lists ChromaDB expects
     ids, embeddings, documents, metadatas = [], [], [], []

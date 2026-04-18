@@ -9,7 +9,7 @@ def embed_chunks(
 
     # Extract all texts and encode in one batch
     texts = [chunk.get("text") for chunk in chunks]
-    vectors = model.encode(texts, batch_size=batch_size, show_progress_bar=True)
+    vectors = model.encode(texts, batch_size=batch_size, show_progress_bar=False)
 
     # Attach the vector back to each chunk's data
     results = []
