@@ -1,10 +1,10 @@
-# 🔍 RAG Pipeline with Semantic Chunking, Sentence Transformers, ChromaDB & Ollama
+# RAG Pipeline with Semantic Chunking, Sentence Transformers, ChromaDB & Ollama
 
 A clean, modular Retrieval-Augmented Generation (RAG) pipeline that combines semantic search with local LLM inference. This project demonstrates how to build an efficient and scalable knowledge retrieval system using modern open-source tools.
 
 ---
 
-## 🚀 Overview
+## Overview
 
 This project implements a **Retrieval-Augmented Generation (RAG)** pipeline that enhances LLM responses with context retrieved from a custom knowledge base.
 
@@ -19,7 +19,7 @@ The result: accurate, context-aware responses without relying on external APIs.
 
 ---
 
-## 🧠 Architecture
+##  Architecture
 
         |
 
@@ -52,7 +52,7 @@ The result: accurate, context-aware responses without relying on external APIs.
      Answer / Summary
 
 
-## 📦 Tech Stack
+## Tech Stack
 
 | Component       | Tool Used             |
 | --------------- | --------------------- |
@@ -63,7 +63,7 @@ The result: accurate, context-aware responses without relying on external APIs.
 | Language        | Python                |
 
 
-## 🛠️ Installation
+##  Installation
 
 ```bash
 # Clone the repository
