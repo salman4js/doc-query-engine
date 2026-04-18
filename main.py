@@ -4,6 +4,7 @@ from helpers import chunker
 from helpers import embedder
 from helpers import data_store
 from helpers import gen_answer
+from utils import utils
 
 
 def document_extraction(file: str):
@@ -37,6 +38,8 @@ def document_extraction(file: str):
 
 def parse_args():
     parser = argparse.ArgumentParser(description="PDF RAG pipeline")
+    # Prevents adding default help command by the parser
+    parser = argparse.ArgumentParser(add_help=False)
 
     parser.add_argument(
         "--read",
@@ -73,6 +76,12 @@ def parse_args():
         help="Question to perform the similiarity search from the database"
     )
 
+    parser.add_argument(
+        "--help",
+        action="store_true",
+        help="Shows the available commands to the user"
+    )
+
     # parser.add_argument(
     #     "--collection",
     #     type=str,
@@ -87,10 +96,13 @@ def main():
 
     args = parse_args()
 
+    if args.help:
+        utils.show_help_commands()
+        return
+
     # Must pass at least one flag
     if not args.read and not args.store and not args.delete and not args.answer:
-        print("Please pass --read, --store, --delete or --answer")
-        print("Example: python main.py --store --file report.pdf")
+        utils.show_no_arguments_command()
         return
     
     if args.store and not args.read:
