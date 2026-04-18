@@ -1,113 +1,178 @@
-# RAG Pipeline with Semantic Chunking, Sentence Transformers, ChromaDB & Ollama
+# RAG Pipeline with Semantic Chunking, Sentence Transformers, ChromaDB, and Ollama
 
-A clean, modular Retrieval-Augmented Generation (RAG) pipeline that combines semantic search with local LLM inference. This project demonstrates how to build an efficient and scalable knowledge retrieval system using modern open-source tools.
+A clean and modular Retrieval-Augmented Generation (RAG) pipeline that combines semantic search with local large language model (LLM) inference. This project demonstrates how to build an efficient and scalable knowledge retrieval system using modern open-source tools.
 
 ---
 
 ## Overview
 
-This project implements a **Retrieval-Augmented Generation (RAG)** pipeline that enhances LLM responses with context retrieved from a custom knowledge base.
+This project implements a Retrieval-Augmented Generation (RAG) pipeline that enhances LLM responses by incorporating context retrieved from a custom knowledge base.
 
-It leverages:
+It uses:
 
-* **Sentence Transformers** for high-quality embeddings
-* **Semantic Chunking** for context-aware document splitting
-* **ChromaDB** as a fast vector database
-* **Ollama** for running LLMs locally
+* Sentence Transformers for generating high-quality embeddings
+* Semantic chunking for context-aware document segmentation
+* ChromaDB as a vector database for efficient similarity search
+* Ollama for running LLMs locally
 
-The result: accurate, context-aware responses without relying on external APIs.
+The result is a system capable of producing accurate and context-aware responses without relying on external APIs.
 
 ---
 
-##  Architecture
+## Architecture
 
-        |
+```
+Document Processing
+│
+├── Text Extraction
+├── Chunking
+├── Embedding Generation
+└── Storage in Vector Database (ChromaDB)
 
-        |── Document Processing
+AI Engine (RAG)
+│
+├── User Query
+├── Query Embedding
+├── Vector Database Lookup (ChromaDB)
+├── Similarity Search
+└── LLM Response Generation
 
-        |     ├── Text Extraction
+Output
+│
+└── Answer / Summary
+```
 
-        |     ├── Chunking
-
-        |     └── Embeddings
-
-        |     └── Store into Vector Database (ChromaDB)
-
-        |── AI Engine (RAG)
-
-        |     ├── User question
-
-        |     ├── Embeddings
-
-        |     ├── Vector Database (ChromaDB)
-
-        |     ├── Similarity Search
-
-        |     └── LLM Response
-
-        |
-
-        v
-
-     Answer / Summary
-
+---
 
 ## Tech Stack
 
-| Component       | Tool Used             |
-| --------------- | --------------------- |
-| Embeddings      | Sentence Transformers |
-| Chunking        | Semantic Chunking     |
-| Vector Database | ChromaDB              |
-| LLM             | Ollama                |
-| Language        | Python                |
+| Component            | Tool Used             |
+| -------------------- | --------------------- |
+| Embeddings           | Sentence Transformers |
+| Chunking             | Semantic Chunking     |
+| Vector Database      | ChromaDB              |
+| LLM                  | Ollama                |
+| Programming Language | Python                |
 
+---
 
-##  Installation
+## Installation
+
+### Clone the Repository
 
 ```bash
-# Clone the repository
 git clone https://github.com/your-username/doc-query-engine.git
 cd doc-query-engine
+```
 
-# Create virtual environment
+### Create a Virtual Environment
+
+```bash
 python -m venv rag-pipeline
-source rag-pipeline/bin/activate  # On Windows: venv\Scripts\activate
+source rag-pipeline/bin/activate  # On Windows: rag-pipeline\Scripts\activate
+```
 
-# Install dependencies
+### Install Dependencies
+
+```bash
 pip install -r requirements.txt
 ```
 
-### Install Ollama
+---
 
-Follow instructions from: [https://ollama.com/](https://ollama.com/)
+## Install Ollama
 
-Feel free to pull any available model from ollama as per your system configurations.
+Follow the official installation instructions:
+
+https://ollama.com/
+
+After installation, pull a model suitable for your system:
 
 ```bash
 ollama pull llama3
 ```
 
-### How to run project?
+---
 
-After the installation steps are done, paste the required documents in the root directory of the project.
+## Usage
+
+### Step 1: Add Documents
+
+Place the documents you want to process in the root directory of the project.
+
+---
+
+### Step 2: Store Document Embeddings
 
 ```bash
 python3 main.py --store --file {your_file_name}
 ```
-This command executes the document processing steps outlined in the Architecture section above.
+
+This command performs document processing, including text extraction, semantic chunking, embedding generation, and storage in ChromaDB.
+
+---
+
+### Step 3: Inspect Stored Data
 
 ```bash
 python3 main.py --read
 ```
-This command displays the extracted document chunks along with their corresponding embeddings for better visibility.
+
+Displays extracted chunks along with their corresponding embeddings for inspection.
+
+---
+
+### Step 4: Start the LLM Server
+
+Ensure Ollama is running:
+
+```bash
+ollama serve
+```
+
+---
+
+### Step 5: Query the System
 
 ```bash
 python3 main.py --answer --question "{your_question_here}"
 ```
-This command takes a user’s query, converts it into embeddings, and performs a similarity search over stored chunks in ChromaDB. The most relevant chunks are then retrieved and combined with the original query. This combined context is passed to a local LLM, which generates a streaming response.
+
+This command:
+
+1. Converts the user query into an embedding
+2. Performs similarity search on stored chunks
+3. Retrieves the most relevant context
+4. Passes the context and query to the LLM
+5. Generates a response (streamed output)
+
+---
+
+### Step 6: Delete Stored Data
 
 ```bash
 python3 main.py --delete
 ```
-This command removes all stored chunk data from the system.
+
+Removes all stored embeddings and chunks from the vector database.
+
+---
+
+## Suppressing Warning Logs
+
+To disable warning messages from Sentence Transformers and related libraries:
+
+```bash
+python -W ignore main.py --answer --question "{your_question_here}" 2>/dev/null
+```
+
+---
+
+## Notes
+
+* Ensure sufficient system resources when running local LLMs
+* Choose an Ollama model that matches your hardware capabilities
+* Semantic chunking improves retrieval quality compared to fixed-size chunking
+* This project is designed for local, privacy-focused deployments
+
+---
