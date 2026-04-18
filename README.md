@@ -145,6 +145,13 @@ This command:
 3. Retrieves the most relevant context
 4. Passes the context and query to the LLM
 5. Generates a response (streamed output)
+6. Validates the streamed response using a semantic consistency checker to ensure the answer is derived strictly from the uploaded document 
+
+#### Semantic Consistency Scoring
+The semantic consistency checker assigns a score between 0.0 and 1.0:
+* < 0.7 → Weak alignment or partial inconsistency with the source document
+* ≥ 0.7 → Acceptable response with good alignment to the source document
+* Close to 1.0 → Highly consistent and strongly grounded response
 
 ---
 
