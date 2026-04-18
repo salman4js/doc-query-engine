@@ -1,7 +1,7 @@
 import chromadb
 from sentence_transformers import SentenceTransformer
 from helpers import llm_response
-
+from hallucination_checker import semantic_checker
 
 def query_chromadb(
     question: str,
@@ -48,4 +48,12 @@ def query_chromadb(
 
 def generate_answer(question: str) -> str:
     matches_from_db = query_chromadb(question)
-    llm_response.generate_response(question, matches_from_db)
+    
+    # chunk_sentences is needed for hallucination checker!
+    chunk_sentences = ""
+    for chunk in matches_from_db:
+        chunk_sentences += chunk['text']
+    
+    claims = llm_response.generate_response(question, matches_from_db)
+    semantic_score = semantic_checker.SemanticScoreChecker().compute_score(chunk_sentences, claims)
+    print(f"Hallucination Score for the generated answer is {semantic_score['semantic_score']}")
