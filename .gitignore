@@ -1,0 +1,5 @@
+chromadb_store/
+__pycache__/
+*.pyc
+rag-venv/
+.DS_Store
