@@ -135,7 +135,7 @@ ollama serve
 ### Step 5: Query the System
 
 ```bash
-python3 main.py --answer --question "{your_question_here}"
+python3 main.py --answer --model_name "{your_installed_or_preferred_custom_model_name}" --question "{your_question_here}"
 ```
 
 This command:

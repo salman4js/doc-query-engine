@@ -82,6 +82,12 @@ def parse_args():
         help="Shows the available commands to the user"
     )
 
+    parser.add_argument(
+        "--model_name",
+        type=str,
+        help="Ollama model name to be passed to generate answers by uploaded document chunks"
+    )
+
     # parser.add_argument(
     #     "--collection",
     #     type=str,
@@ -121,7 +127,11 @@ def main():
         if not args.question:
             print('Please ask any question from the document uploaded...')
             return
-        gen_answer.generate_answer(args.question)
+        
+        if not args.model_name:
+            utils.show_no_model_msg()
+            return
+        gen_answer.generate_answer(args.question, args.model_name)
 
 
 if __name__ == "__main__":
