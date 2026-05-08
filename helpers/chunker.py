@@ -6,6 +6,7 @@ import re
 from sentence_transformers import SentenceTransformer
 
 nltk.download("punkt", quiet=True)
+nltk.download("punkt_tab", quiet=True)
 
 
 model = SentenceTransformer("multi-qa-MiniLM-L6-cos-v1")
