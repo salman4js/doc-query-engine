@@ -3,11 +3,11 @@ import json
 
 url = "http://localhost:11434/api/chat"
 
-def generate_response(question: str, matches: list[dict]) -> str:
+def generate_response(question: str, model_name: str, matches: list[dict]) -> str:
 
     context = "\n\n".join([m.get("text", str(m)) for m in matches])
     payload = {
-        "model": "celestia",
+        "model": model_name,
         "messages": [
             {
                 "role": "system",
