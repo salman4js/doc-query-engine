@@ -61,7 +61,7 @@ Output
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/doc-query-engine.git
+git clone https://github.com/salman4js/doc-query-engine.git
 cd doc-query-engine
 ```
 
