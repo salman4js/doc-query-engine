@@ -1,5 +1,5 @@
 import chromadb
-from sentence_transformers import SentenceTransformer
+from models import cache_models
 
 def get_data() -> chromadb.Collection:
 
@@ -25,7 +25,6 @@ def get_data() -> chromadb.Collection:
 def store_in_chromadb(
     chunks: list[dict],
     collection_name: str = "pdf_chunks",
-    model_name: str = "multi-qa-MiniLM-L6-cos-v1",
     batch_size: int = 64,
 ) -> chromadb.Collection:
 
@@ -37,7 +36,7 @@ def store_in_chromadb(
     )
 
     # Embed all chunks in one batch
-    model = SentenceTransformer(model_name)
+    model = cache_models.get_sentence_trasformer_model()
     texts   = [chunk.get("text") for chunk in chunks]
     vectors = model.encode(texts, batch_size=batch_size, show_progress_bar=False)
 
