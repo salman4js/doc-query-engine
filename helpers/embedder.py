@@ -1,11 +1,10 @@
-from sentence_transformers import SentenceTransformer
+from models import cache_models
 
 def embed_chunks(
     chunks: list[dict],
-    model_name: str = "multi-qa-MiniLM-L6-cos-v1",
     batch_size: int = 64,
 ) -> list[dict]:
-    model = SentenceTransformer(model_name)
+    model = cache_models.get_sentence_trasformer_model()
 
     # Extract all texts and encode in one batch
     texts = [chunk.get("text") for chunk in chunks]

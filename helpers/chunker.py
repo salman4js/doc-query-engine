@@ -3,13 +3,13 @@ from __future__ import annotations
 import numpy as np
 import nltk
 import re
-from sentence_transformers import SentenceTransformer
+
+from models import cache_models
+from helpers import logger
 
 nltk.download("punkt", quiet=True)
 nltk.download("punkt_tab", quiet=True)
-
-
-model = SentenceTransformer("multi-qa-MiniLM-L6-cos-v1")
+nltk.download("stopwords", quiet=True)
 
 def clean_text(text: str) -> str:
     text = text.replace("ﬁ", "fi").replace("ﬂ", "fl")  # fix ligatures
@@ -32,9 +32,9 @@ def sentences_from_text(text: str) -> list[str]:
 
 def semantic_chunk_auto(
     text: str,
-    percentile: float = 10.0,    
-    min_chunk_sentences: int = 2,
-    max_chunk_sentences: int = 10,
+    percentile: float = 20.0,    
+    min_chunk_sentences: int = 3,
+    max_chunk_sentences: int = 7,
 ) -> list[str]:
 
     text = clean_text(text) 
@@ -44,6 +44,8 @@ def semantic_chunk_auto(
         return [text]
 
     passages = ["passage: " + s for s in sentences]
+
+    model = cache_models.get_sentence_trasformer_model()
 
     embeddings = model.encode(passages, batch_size=64, show_progress_bar=False)
 
@@ -81,15 +83,23 @@ def semantic_chunk_auto(
     
     return [" ".join(chunk) for chunk in chunks]
 
+# Re-ranker functions with cross encoder to optimize the chunks that are going to the LLM to generate answer.
+def re_rank_chunks(query: str, chunks: list, top_k=5) -> list[dict]:
+    logger.logging.info('PROCESS:STARTED: Re-ranking process started...')
+    model = cache_models.get_cross_encoder_model()
+    pairs = [(query, doc['text']) for doc in chunks]
+    scores = model.predict(pairs)
+    
+    ranked_indices = np.argsort(scores)[::-1] 
+    ranked_indices = ranked_indices[:top_k]
+    ranked_docs = []
+
+    for i in ranked_indices:
+        chunks[i]['score'] = float(scores[i])
+        ranked_docs.append(chunks[i])
+
+    logger.logging.info(f'PROCESS:COMPLETED: Re-ranking process completed, re-ranked {len(ranked_docs)} chunks')
+    return ranked_docs
 
 def perform_chunking(text: str) -> list[str]:
     return semantic_chunk_auto(text)
-
-
-# python -m nltk.downloader punkt
-
-# pymupdf
-
-# pip install sentence-transformers nltk numpy
-
-# chromadb

@@ -1,10 +1,11 @@
 from sentence_transformers import SentenceTransformer, util
 from nltk.tokenize import sent_tokenize
+from models import cache_models
 
 
 class SemanticScoreChecker:
-    def __init__(self, model_name='all-MiniLM-L6-v2', threshold=0.7):
-        self.model = SentenceTransformer(model_name)
+    def __init__(self, threshold=0.7):
+        self.model = cache_models.get_semantic_score_checker_model()
         self.threshold = threshold
 
     def split_sentences(self, text):

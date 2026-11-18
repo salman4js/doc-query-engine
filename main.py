@@ -1,40 +1,22 @@
 import argparse
-from helpers import text_extracter
-from helpers import chunker
-from helpers import embedder
+
+# Disabling logging from hugging face and sentence transformer
+import os
+os.environ["HF_HUB_OFFLINE"] = "1"                 # no network checks (the HF_TOKEN warning goes away)
+os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"   # hides "Loading weights" bar
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+import logging
+from transformers.utils import logging as hf_logging
+hf_logging.set_verbosity_error()                   # hides the LOAD REPORT / warnings
+hf_logging.disable_progress_bar()
+logging.getLogger("sentence_transformers").setLevel(logging.ERROR)
+
 from helpers import data_store
 from helpers import gen_answer
+from helpers import document_extractor
+from qa_system import qa_system
 from utils import utils
-
-
-def document_extraction(file: str):
-    
-    # First, perform text extraction.
-    extracted_texts = text_extracter.extract_text(file)
-    chunks = []
-    
-    if len(extracted_texts) >= 1:
-        
-        for index, texts in enumerate(extracted_texts, 1):
-            # convert the extracted texts into chunks (using semantic chunking)
-            chunks_per_page = chunker.perform_chunking(texts)
-            if len(chunks_per_page) >= 1:
-                for chunk in chunks_per_page:
-                    chunks_dict = {}
-                    chunks_dict['text'] = chunk
-                    chunks_dict['page'] = index
-                    chunks.append(chunks_dict)
-                    
-
-        if len(chunks) > 0:
-            vector_embeddings = embedder.embed_chunks(chunks)
-            data_store.store_in_chromadb(vector_embeddings)
-        else:
-            print('Something went wrong while performing chunking...')
-
-
-    else:
-        print('Extracted text is not found')
 
 def parse_args():
     parser = argparse.ArgumentParser(description="PDF RAG pipeline")
@@ -88,6 +70,12 @@ def parse_args():
         help="Ollama model name to be passed to generate answers by uploaded document chunks"
     )
 
+    parser.add_argument(
+        "--start_qa_bot",
+        action="store_true",
+        help="Starts the question-answer to answer question from the document uplaoded"
+    )
+
     # parser.add_argument(
     #     "--collection",
     #     type=str,
@@ -107,7 +95,7 @@ def main():
         return
 
     # Must pass at least one flag
-    if not args.read and not args.store and not args.delete and not args.answer:
+    if not args.read and not args.store and not args.delete and not args.answer and not args.start_qa_bot:
         utils.show_no_arguments_command()
         return
     
@@ -115,13 +103,20 @@ def main():
         if not args.file:
             print('Specify the file name to read...')
             return
-        document_extraction(args.file)
+        document_extractor.extract(args.file)
 
     if args.read and not args.store:
         data_store.get_data()
     
     if args.delete and not args.read and not args.store:
         data_store.wipe_out()
+
+    if args.start_qa_bot:
+        if not args.model_name:
+            utils.show_no_model_msg()
+            return
+        qa_system.start_qa_bot(args.model_name)
+        return
     
     if args.answer and not args.delete and not args.read and not args.store:
         if not args.question:
@@ -135,4 +130,6 @@ def main():
 
 
 if __name__ == "__main__":
+    from helpers import logger
+    logger.logging.info('Application started')
     main()
