@@ -134,24 +134,48 @@ ollama serve
 
 ### Step 5: Query the System
 
+The QA system can be started in two modes, depending on whether conversational history is required.
+
+#### Option A: Standalone QA Mode (Without Chatbot)
+
+Runs the QA system independently for each question, without maintaining conversational history.
+
 ```bash
 python3 main.py --answer --model_name "{your_installed_or_preferred_custom_model_name}" --question "{your_question_here}"
 ```
 
-This command:
+#### Option B: Conversational QA Mode (With Chatbot)
+
+Runs the QA system with chatbot functionality, enabling conversational interactions and generating context-aware answers based on previous conversation history.
+
+```bash
+python3 main.py --answer --model_name "{your_installed_or_preferred_custom_model_name}" --start_qa_bot
+```
+
+#### QA Pipeline Workflow
+
+Both modes follow the same pipeline:
 
 1. Converts the user query into an embedding
-2. Performs similarity search on stored chunks
-3. Retrieves the most relevant context
-4. Passes the context and query to the LLM
-5. Generates a response (streamed output)
-6. Validates the streamed response using a semantic consistency checker to ensure the answer is derived strictly from the uploaded document 
+2. Generates 3 variants of the question while keeping the meaning intact
+3. Performs similarity search on the stored chunks for each generated question
+4. Performs BM25 keyword search on the stored chunks for each generated question
+5. Combines the retrieved chunks and their scores using Reciprocal Rank Fusion
+6. Performs retrieval grading with a `min_score` of 0.2; chunks that do not pass are discarded
+7. Retrieves the most relevant context
+8. Passes the context and query to the LLM
+9. Generates a response (streamed output)
+10. Validates the streamed response using a semantic consistency checker to ensure the answer is derived strictly from the uploaded document
 
 #### Semantic Consistency Scoring
+
 The semantic consistency checker assigns a score between 0.0 and 1.0:
-* < 0.7 → Weak alignment or partial inconsistency with the source document
-* ≥ 0.7 → Acceptable response with good alignment to the source document
-* Close to 1.0 → Highly consistent and strongly grounded response
+
+| Score          | Meaning                                                            |
+| -------------- | ------------------------------------------------------------------ |
+| < 0.7          | Weak alignment or partial inconsistency with the source document   |
+| ≥ 0.7          | Acceptable response with good alignment to the source document     |
+| Close to 1.0   | Highly consistent and strongly grounded response                   |
 
 ---
 
