@@ -162,10 +162,11 @@ Both modes follow the same pipeline:
 4. Performs BM25 keyword search on the stored chunks for each generated question
 5. Combines the retrieved chunks and their scores using Reciprocal Rank Fusion
 6. Performs retrieval grading with a `min_score` of 0.2; chunks that do not pass are discarded
-7. Retrieves the most relevant context
-8. Passes the context and query to the LLM
-9. Generates a response (streamed output)
-10. Validates the streamed response using a semantic consistency checker to ensure the answer is derived strictly from the uploaded document
+7. If no chunks remain after the steps above, the pipeline restarts from step 2 for one more attempt to retrieve valid chunks
+8. Retrieves the most relevant context
+9. Passes the context and query to the LLM
+10. Generates a response (streamed output)
+11. Validates the streamed response using a semantic consistency checker to ensure the answer is derived strictly from the uploaded document
 
 #### Semantic Consistency Scoring
 
